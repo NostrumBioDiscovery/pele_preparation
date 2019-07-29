@@ -8,7 +8,7 @@ git clone https://github.com/NostrumBioDiscovery/pele_preparation.git
 
 cd pele_preparation
 
-pip install .
+pip install --ignore-installed .
 
 Test
 ------
