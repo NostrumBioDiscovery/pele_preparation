@@ -36,11 +36,11 @@ class ZMATRIX:
         :rtype : a ZMATRIX object
         :param aminoacid_name: a string containing the 3 letters code for the desired aminoacid.
         """
-        filename = "DataLocal/Templates/OPLS2005/Protein/" + aminoacid_name.lower()
+        filename = "DeataLocal/Templates/OPLS2005/Protein/" + aminoacid_name.lower()
         try:
             filein = open(filename, 'r')
         except IOError:
-            filename = "DataLocal/Templates/OPLS2005/HeteroAtoms/" + aminoacid_name.lower().strip() + 'z'
+            filename = "DaetaLocal/Templates/OPLS2005/HeteroAtoms/" + aminoacid_name.lower().strip() + 'z'
             try:
                 filein = open(filename, 'r')
             except IOError:
