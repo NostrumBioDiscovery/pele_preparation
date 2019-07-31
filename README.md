@@ -19,8 +19,9 @@ python -m PPP.main -ipdb 1w7h_preparation_structure_2w.pdb
 
 python -m Helpers.constraints 1w7h_preparation_structure_2w.pdb constraints.conf
 
-
 export SCHRODINGER_PYTHONPATH=" "
+
+export PYTHONNOUSERSITE=" "
 
 /opt/schrodinger2017-4/utilities/python ../PlopRotTemp/main.py lig.mae
 
