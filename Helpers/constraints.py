@@ -9,6 +9,8 @@ AMINOACIDS = ["VAL", "ASN", "GLY", "LEU", "ILE",
               "PHE", "GLU", "HIS", "HIP", "TYR",
               "CYS", "HID"]
 
+IONS = ["CA", "MG", "ZN", "MN", "NA", "CL"]
+
 TER_CONSTR = 5
 
 HETATM_CONSTR = 50
@@ -31,9 +33,10 @@ class ConstraintBuilder(object):
         self.dynamic_waters = dynamic_waters
 
     def parse_atoms(self, interval=10):
-        residues = {}
+        residues = []
         initial_res = None
         waters = []
+        ions = []
         with open(self.pdb, "r") as pdb:
             for line in pdb:
                 resname = line[16:21].strip()
@@ -43,42 +46,48 @@ class ConstraintBuilder(object):
                 if line.startswith("ATOM") and resname in AMINOACIDS and atomtype == "CA":
                     try:
                         if not initial_res:
-                            residues["initial"] = [chain, line[22:26].strip()]
+                            initial = [chain, line[22:26].strip()]
                             initial_res = True
                             initial_resnum = line[22:26].strip()
                             continue
                         # Apply constraint every 10 residues
                         elif (int(resnum)-int(initial_resnum)) % interval == 0 and line.startswith("ATOM") and resname in AMINOACIDS and atomtype == "CA":
-                            residues[resnum] = chain
-                            residues["terminal"] = [chain, line[22:26].strip()]
+                            residues.append([resnum, chain])
+                            terminal = [chain, line[22:26].strip()]
                     except ValueError:
                         continue
                 elif line.startswith("HETATM") and resname == "HOH" and atomtype == "OW":
-                    waters.append([chain, resnum])
-            #delete terminal residue from other residues
-            del residues[residues["terminal"][1]]
-        return residues, waters
+                    waters.append([atomtype, chain, resnum])
+                elif line.startswith("HETATM") and resname in  IONS:
+                    ions.append([atomtype, chain, resnum])
+        return initial, residues, terminal, waters, ions
 
-    def build_constraint(self, residues, BACK_CONSTR=BACK_CONSTR, TER_CONSTR=TER_CONSTR, waters=[], constraint_water=HETATM_CONSTR):
+    def build_constraint(self, initial, residues, terminal, BACK_CONSTR=BACK_CONSTR, TER_CONSTR=TER_CONSTR, waters=[], constraint_water=HETATM_CONSTR, ions=[]):
 
         init_constr = ['''"constraints":[''', ]
 
-        back_constr = [CONSTR_CALPHA.format(chain, resnum, BACK_CONSTR) for resnum, chain in residues.items() if resnum.isdigit()]
+        back_constr = [CONSTR_CALPHA.format(chain, resnum, BACK_CONSTR) for resnum, chain in residues if resnum.isdigit()]
 
         gaps_constr = self.gaps_constraints()
 
         metal_constr = self.metal_constraints()
 
         if waters:
-            water_constr = self.water_constraints(waters, constraint_water)
+            water_constr = self.create_constraints(waters, constraint_water)
         else:
             water_constr = []
 
-        terminal_constr = [CONSTR_CALPHA.format(residues["initial"][0], residues["initial"][1], TER_CONSTR), CONSTR_CALPHA.format(residues["terminal"][0], residues["terminal"][1], TER_CONSTR).strip(",")]
+       
+        if ions:
+            ions_constr = self.create_constraints(ions, constraint_water)
+        else:
+            ions_constr = []
+
+        terminal_constr = [CONSTR_CALPHA.format(initial[0], initial[1], TER_CONSTR), CONSTR_CALPHA.format(terminal[0], terminal[1], TER_CONSTR).strip(",")]
 
         final_constr = ["],"]
 
-        constraints = init_constr + back_constr + gaps_constr + metal_constr + water_constr + terminal_constr + final_constr
+        constraints = init_constr + back_constr + gaps_constr + metal_constr + ions_constr + water_constr + terminal_constr + final_constr
 
         return constraints
 
@@ -100,18 +109,21 @@ class ConstraintBuilder(object):
                 metal_constr.append(CONSTR_DIST.format(HETATM_CONSTR, bond_lenght, chain, resnum, ligname, chain, metnum, metal_name))
         return metal_constr
 
-    def water_constraints(self, waters, constraint_water):
+    def create_constraints(self, waters, constraint_water):
         water_constr = []
-        for chain, residue in waters:
+        for atom, chain, residue in waters:
             if "{}:{}".format(chain, residue) not in self.dynamic_waters:
-                water_constr.append(CONSTR_ATOM.format(constraint_water, chain, residue, "_OW_"))
+                if atom == "OW":
+                    water_constr.append(CONSTR_ATOM.format(constraint_water, chain, residue, "_"+atom+"_"))
+                else:
+                    water_constr.append(CONSTR_ATOM.format(constraint_water, chain, residue, atom+"__"))
         return water_constr
 
 
 def retrieve_constraints(pdb_file, gaps, metal, back_constr=BACK_CONSTR, ter_constr=TER_CONSTR, interval=10,  dynamic_waters=[], constr_waters=HETATM_CONSTR):
     constr = ConstraintBuilder(pdb_file, gaps, metal, dynamic_waters)
-    residues, waters = constr.parse_atoms(interval=interval)
-    constraints = constr.build_constraint(residues, back_constr, ter_constr, waters, constr_waters)
+    initial, residues, terminal, waters, ions = constr.parse_atoms(interval=interval)
+    constraints = constr.build_constraint(initial, residues, terminal, back_constr, ter_constr, waters, constr_waters, ions)
     return constraints
 
 class TemplateBuilder(object):
