@@ -329,8 +329,8 @@ if __name__ == "__main__":
     
 
     print("########################################################################")
-    print("\n{} template and {} rotamer library has been successfully created in {}\n").format(
-        template,rotamers_file, os.getcwd())
+    print("\n{} template and {} rotamer library has been successfully created in {}\n".format(
+        template,rotamers_file, os.getcwd()))
     print("########################################################################")
 
 
