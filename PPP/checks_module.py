@@ -189,8 +189,8 @@ def CheckStructure(initial_structure, gaps={}, no_gaps={}, charge_terminals=Fals
     residues2fix = {}
     crosslinked_cysteines, charged_cysteines = CheckCysteines(initial_structure)
     residues2remove = {}
-    #metals2coordinate = CheckMetalsCoordination(initial_structure)
     metals2coordinate = {}
+    #metals2coordinate = CheckMetalsCoordination(initial_structure)
     residues_without_template = []
     for chain in initial_structure.iterChains():
         if chain.getChid() in gaps.keys():
@@ -576,8 +576,9 @@ def CheckforGaps(structure, max_bond_distance):
         max_bond_distance = 1.55
     for chain in structure.iterChains():
         # initial, final = FindInitialAndFinalResidues(chain)
+        residues = [residue for residue in chain]
         previous_residue_number = None
-        for residue in chain.iterResidues():
+        for i, residue in enumerate(chain.iterResidues()):
             chain_id = chain.getChid()
             # print residue.getResnum() < previous_residue_number
             if previous_residue_number is not None:
@@ -592,6 +593,8 @@ def CheckforGaps(structure, max_bond_distance):
                     else:
                         current_residue_N = residue.getAtom("N")
                         previous_residue = chain.getResidue(previous_residue_number)
+                        if not previous_residue:
+                            previous_residue = residues[i-1]
                         previous_residue_C = previous_residue.getAtom('C')
                         if current_residue_N is not None and previous_residue_C is not None:
                             distance = calcDistance(current_residue_N, previous_residue_C)
