@@ -10,10 +10,11 @@ cd pele_preparation
 
 pip install --ignore-installed .
 
-Test
-------
 
-cd test
+Test 
+------------
+
+cd tests/test_helpers
 
 python -m PPP.main -ipdb 1w7h_preparation_structure_2w.pdb
 
