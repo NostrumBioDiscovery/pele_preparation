@@ -1,4 +1,5 @@
 #!/bin/python
+import os
 import sys
 from prody import *
 
@@ -23,8 +24,13 @@ addNonstdAminoacid('CYT', 'neutral', 'acyclic', 'medium', 'polar', 'buried')
 addNonstdAminoacid('LYN', 'neutral', 'acyclic', 'large', 'polar', 'buried')
 
 
-def main(input_pdb, pdb_resolution, output_pdb="", no_gaps_ter=False, charge_terminals=False, make_unique=False,
+def main(input_pdb, pdb_resolution=2.5, output_pdb="", no_gaps_ter=False, charge_terminals=False, make_unique=False,
          remove_terminal_missing=False, mutant_multiple=False, mutation=""):
+
+    output = os.path.splitext(os.path.basename(input_pdb))[0]
+    output_pdb = ["", ]
+    output_pdb[0] = "{}_processed.pdb".format(output)
+
     try:
         initial_structure = parsePDB(input_pdb)
     except IOError:
@@ -74,7 +80,7 @@ def main(input_pdb, pdb_resolution, output_pdb="", no_gaps_ter=False, charge_ter
             PDBwriter(output_pdb[0], WritingAtomNames(structure2use), make_unique, residues2remove,
                       no_gaps_ter, not_proteic_ligand, gaps, not_gaps)
 
-        return residues_without_template, gaps, metals2coordinate
+        return output_pdb[0], residues_without_template, gaps, metals2coordinate
 
 if __name__ == '__main__':
     arguments = ParseArguments()

@@ -10,6 +10,17 @@ cd pele_preparation
 
 pip install --ignore-installed .
 
+yum install gcc gcc-c++ kernel-devel python-devel tkinter python-pmw glew-devel \
+  freeglut-devel libpng-devel freetype-devel libxml2-devel glm-devel
+
+git clone https://github.com/schrodinger/pymol-open-source.git
+
+cd pymol-open-source
+
+python setup.py install --home=/installation/path/
+
+export PYTHONPATH=$PYTHONPATH:/installation/path/lib/python/
+
 
 Test 
 ------------
@@ -24,6 +35,6 @@ export SCHRODINGER_PYTHONPATH=" "
 
 export PYTHONNOUSERSITE=" "
 
-/opt/schrodinger2017-4/utilities/python ../PlopRotTemp/main.py lig.mae
+/opt/schrodinger2017-4/utilities/python ../../PlopRotTemp/main.py lig.mae
 
 
