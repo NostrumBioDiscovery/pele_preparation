@@ -2,7 +2,7 @@ import argparse, os, sys
 from string import *
 import glob
 from math import sqrt
-import pele_preparation.PPP.main as PPP
+import PPP.main as PPP
 
 def randomize_starting_position(clean_ligand_pdb, input_ligand, ligname, rec_file, rec_com, lig_com, env, poses):
     ### Randomize ligand starting position for outside-inside
@@ -124,7 +124,7 @@ def join(receptor, ligands, env, output="input{}.pdb"):
                 ligand_content[j] = line[:6] + "{:>5}".format(current_atomnum) + line[11:]
                 current_atomnum += 1
                 
-        content_join_file = receptor_content + ligand_content + ["END"]
+        content_join_file = receptor_content + ["TER"] + ligand_content + ["END"]
         if env:
             output_path = os.path.join(env.pele_dir, output.format(i))
         else:
