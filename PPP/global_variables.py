@@ -230,7 +230,7 @@ protein_atomnames_dictionary = {
             ['N', 'N', 'N', 'N', 'N', 'N', 'N'], ['O', 'O', 'O', 'O', 'O', 'O', 'O'],
             ['OH', 'OH', 'OH', 'OH', 'OH', 'OH', 'OH']],
     "VAL": [['H', 'H', 'HN', 'H2', 'HN', 'H', 'HN'], ['HA', 'HA', 'HA', 'HA', 'HA', 'HA', 'HA'],
-            ['HB', 'HB', 'HB', 'HB', 'HB', 'HB', 'HB'], ['HG11', '1HG1', 'HG11', 'HG11', 'HG11', 'HG11', 'HG11'],
+            ['HB', 'HB', 'HB', 'HB3', 'HB', 'HB', 'HB'], ['HG11', '1HG1', 'HG11', 'HG11', 'HG11', 'HG11', 'HG11'],
             ['HG12', '2HG1', 'HG12', 'HG12', 'HG12', 'HG12', 'HG12'],
             ['HG13', '3HG1', 'HG13', 'HG13', 'HG13', 'HG13', 'HG13'],
             ['HG21', '1HG2', 'HG21', 'HG21', 'HG21', 'HG21', 'HG21'],
