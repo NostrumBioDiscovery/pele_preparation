@@ -142,9 +142,10 @@ def FixStructure(initial_structure, residues2fix, gaps, charge_terminals, debug=
             gaps_b = []
         chain_id = chain.getChid()
         if chain_id == " ":
-            current_structure = initial_structure.copy()
-        else:
-            current_structure = initial_structure.select("chain `{}`".format(chain_id)).copy()
+            print("#####################")
+            print("WARNING: There is some chain id missing!!!!!!!")
+            print("#####################")
+        current_structure = initial_structure.select("chain `{}`".format(chain_id)).copy()
         new_chain = None
         initial_residue, final_residue = FindInitialAndFinalResidues(current_structure)
         for residue in current_structure.iterResidues():
